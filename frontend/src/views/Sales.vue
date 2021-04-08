@@ -97,9 +97,6 @@ export default {
       await api.books.sellBook(item);
       await this.refreshList();
     },
-    getGenre(genre){
-      return api.genre.getGenre(genre);
-    }
   },
   created() {
     this.refreshList();

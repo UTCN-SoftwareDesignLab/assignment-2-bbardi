@@ -125,9 +125,6 @@ export default {
       this.selectedBook = {};
       this.openDialog = true;
     },
-    getGenre(genre) {
-      return api.genre.getGenre(genre);
-    },
     reportCSV() {
       api.reports.getCSVReport();
     },

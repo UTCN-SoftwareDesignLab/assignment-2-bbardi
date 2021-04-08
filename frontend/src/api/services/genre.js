@@ -8,9 +8,6 @@ export default {
             }
         )
     },
-    getGenre(genre) {
-        return genre.genre
-    },
     createGenre(genre) {
         return HTTP.post(BASE_URL + "/bookstore/genres/create", genre, { headers: authHeader() }).then(
             (response) => {
