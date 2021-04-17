@@ -5,10 +5,7 @@ public class UrlMapping {
     public static final String BOOK_STORE = API_PATH + "/bookstore";
 
     //Paths common for CRUD parts of the project
-    public static final String FIND_ALL = "/findall";
-    public static final String CREATE = "/create";
-    public static final String DELETE = "/delete";
-    public static final String EDIT = "/edit";
+    public static final String ENTITY = "/{id}";
 
     //users paths
     public static final String USERS = BOOK_STORE + "/users";

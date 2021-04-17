@@ -4,19 +4,12 @@ import edu.bbardisoftwaredesign.bookstore.BaseControllerTest;
 import edu.bbardisoftwaredesign.bookstore.TestCreationFactory;
 import edu.bbardisoftwaredesign.bookstore.books.model.dto.BookDTO;
 import edu.bbardisoftwaredesign.bookstore.books.service.BookService;
-import edu.bbardisoftwaredesign.bookstore.report.ReportService;
 import edu.bbardisoftwaredesign.bookstore.report.ReportServiceFactory;
-import edu.bbardisoftwaredesign.bookstore.report.ReportType;
-import edu.bbardisoftwaredesign.bookstore.security.dto.MessageResponse;
-import edu.bbardisoftwaredesign.bookstore.user.UsersController;
-import edu.bbardisoftwaredesign.bookstore.user.model.dto.UserDTO;
-import edu.bbardisoftwaredesign.bookstore.user.service.UserManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -30,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class BookControllerTest extends BaseControllerTest {
     @InjectMocks
-    private BooksController booksController;
+    private BookController booksController;
 
     @Mock
     private BookService bookService;
@@ -43,7 +36,7 @@ public class BookControllerTest extends BaseControllerTest {
     protected void setUp(){
         super.setUp();
         MockitoAnnotations.openMocks(this);
-        booksController = new BooksController(bookService,reportServiceFactory);
+        booksController = new BookController(bookService,reportServiceFactory);
         mockMvc = MockMvcBuilders.standaloneSetup(booksController).build();
     }
 
@@ -51,7 +44,7 @@ public class BookControllerTest extends BaseControllerTest {
     void findAllBooks() throws Exception{
         List<BookDTO> bookDTOS = TestCreationFactory.listOf(BookDTO.class);
         when(bookService.findAll()).thenReturn(bookDTOS);
-        ResultActions resultActions = mockMvc.perform(get(BOOKS+FIND_ALL));
+        ResultActions resultActions = mockMvc.perform(get(BOOKS));
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(bookDTOS));
     }
@@ -66,7 +59,7 @@ public class BookControllerTest extends BaseControllerTest {
                 .quantity(randomLong())
                 .build();
         when(bookService.create(book)).thenReturn(book);
-        ResultActions result = performPostWithRequestBody(BOOKS+CREATE,book);
+        ResultActions result = performPostWithRequestBody(BOOKS,book);
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(book));
     }
@@ -74,27 +67,29 @@ public class BookControllerTest extends BaseControllerTest {
     @Test
     void deleteBook() throws Exception{
         BookDTO book = BookDTO.builder()
+                .id(randomLong())
                 .title(randomString())
                 .author(randomString())
                 .genre(randomString())
                 .price(randomBoundedFloat(200))
                 .quantity(randomLong())
                 .build();
-        ResultActions result = performDeleteWithRequestBody(BOOKS+DELETE,book);
+        ResultActions result = performDeleteWithPathVariable(BOOKS+ENTITY,book.getId().toString());
         result.andExpect(status().isOk());
     }
 
     @Test
     void editBook() throws Exception{
         BookDTO book = BookDTO.builder()
+                .id(randomLong())
                 .title(randomString())
                 .author(randomString())
                 .genre(randomString())
                 .price(randomBoundedFloat(200))
                 .quantity(randomLong())
                 .build();
-        when(bookService.edit(book)).thenReturn(book);
-        ResultActions result = performPatchWithRequestBody(BOOKS+EDIT,book);
+        when(bookService.edit(book.getId(),book)).thenReturn(book);
+        ResultActions result = performPatchWithRequestBodyAndPathVariable(BOOKS+ENTITY,book.getId().toString(),book);
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(book));
     }
@@ -102,17 +97,18 @@ public class BookControllerTest extends BaseControllerTest {
     @Test
     void sellBook() throws Exception{
         BookDTO book = BookDTO.builder()
+                .id(randomLong())
                 .title(randomString())
                 .author(randomString())
                 .genre(randomString())
                 .price(randomBoundedFloat(200))
                 .quantity(randomLong())
                 .build();
-        when(bookService.sell(book)).thenReturn(true);
-        ResultActions result = performPostWithRequestBody(BOOKS+SELL_BOOK,book);
+        when(bookService.sell(book.getId())).thenReturn(true);
+        ResultActions result = performPostWithPathVariable(BOOKS+ENTITY+SELL_BOOK,book.getId().toString());
         result.andExpect(status().isOk());
-        when(bookService.sell(book)).thenReturn(false);
-        result = performPostWithRequestBody(BOOKS+SELL_BOOK,book);
+        when(bookService.sell(book.getId())).thenReturn(false);
+        result = performPostWithPathVariable(BOOKS+ENTITY+SELL_BOOK,book.getId().toString());
         result.andExpect(status().isBadRequest());
     }
 

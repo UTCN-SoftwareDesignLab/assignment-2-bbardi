@@ -2,7 +2,7 @@ import authHeader, { BASE_URL, HTTP } from "../http";
 
 export default {
     fetchAll() {
-        return HTTP.get(BASE_URL + "/bookstore/users/findall", { headers: authHeader() }).then(
+        return HTTP.get(BASE_URL + "/bookstore/users", { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },
@@ -12,7 +12,7 @@ export default {
         );
     },
     deleteUser(user) {
-        return HTTP.delete(BASE_URL + "/bookstore/users/delete", { data: user, headers: authHeader() }).then(
+        return HTTP.delete(BASE_URL + `/bookstore/users/${user.id}`, { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },
@@ -22,7 +22,7 @@ export default {
         );
     },
     createUser(user) {
-        return HTTP.post(BASE_URL + "/bookstore/users/create", user, { headers: authHeader() }).then(
+        return HTTP.post(BASE_URL + "/bookstore/users", user, { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },
@@ -32,7 +32,7 @@ export default {
         );
     },
     editUser(user) {
-        return HTTP.patch(BASE_URL + "/bookstore/users/edit", user, { headers: authHeader() }).then(
+        return HTTP.patch(BASE_URL + `/bookstore/users/${user.id}`, user, { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },

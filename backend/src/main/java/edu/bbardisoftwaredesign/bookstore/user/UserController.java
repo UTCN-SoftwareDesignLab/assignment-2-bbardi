@@ -13,26 +13,26 @@ import static edu.bbardisoftwaredesign.bookstore.UrlMapping.*;
 @RestController
 @RequestMapping(USERS)
 @RequiredArgsConstructor
-public class UsersController {
+public class UserController {
     private final UserManagementService userManagementService;
 
-    @GetMapping(FIND_ALL)
+    @GetMapping
     public List<UserDTO> findAllUsers() {
         return userManagementService.findAll();
     }
 
-    @PostMapping(CREATE)
+    @PostMapping
     public UserDTO createUser(@RequestBody UserDTO user) {
         return userManagementService.createUser(user);
     }
 
-    @DeleteMapping(DELETE)
-    public void deleteUser(@RequestBody UserDTO user) {
-        userManagementService.deleteUser(user);
+    @DeleteMapping(ENTITY)
+    public void deleteUser(@PathVariable Long id) {
+        userManagementService.deleteUser(id);
     }
 
-    @PatchMapping(EDIT)
-    public UserDTO editUser(@RequestBody UserDTO user) {
-        return userManagementService.editUser(user);
+    @PatchMapping(ENTITY)
+    public UserDTO editUser(@PathVariable Long id, @RequestBody UserDTO user) {
+        return userManagementService.editUser(id, user);
     }
 }

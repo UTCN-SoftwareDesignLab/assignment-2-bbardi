@@ -57,14 +57,14 @@ public class GenreServiceIntegrationTest {
         GenreDTO genreDTO = GenreDTO.builder().genre(randomString()).build();
         genreDTO = genreService.create(genreDTO);
         genreDTO.setGenre(randomString());
-        Assertions.assertEquals(genreDTO.getGenre(),genreService.edit(genreDTO).getGenre());
+        Assertions.assertEquals(genreDTO.getGenre(),genreService.edit(genreDTO.getId(),genreDTO).getGenre());
     }
 
     @Test
     void delete(){
         GenreDTO genreDTO = GenreDTO.builder().genre(randomString()).build();
         genreDTO = genreService.create(genreDTO);
-        genreService.delete(genreDTO);
+        genreService.delete(genreDTO.getId());
         Assertions.assertEquals(genreService.findAll().size(), 0);
     }
 }

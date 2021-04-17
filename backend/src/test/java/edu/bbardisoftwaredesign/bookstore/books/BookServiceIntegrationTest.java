@@ -68,7 +68,7 @@ public class BookServiceIntegrationTest {
                 .build();
         genreRepository.save(Genre.builder().genre(bookDTO.getGenre()).build());
         bookDTO = bookService.create(bookDTO);
-        bookService.remove(bookDTO);
+        bookService.remove(bookDTO.getId());
     }
     @Test
     void edit(){
@@ -83,11 +83,12 @@ public class BookServiceIntegrationTest {
         genreRepository.save(Genre.builder().genre(bookDTO.getGenre()).build());
         bookDTO = bookService.create(bookDTO);
         bookDTO.setQuantity(732730L);
-        Assertions.assertEquals(732730L, bookService.edit(bookDTO).getQuantity());
+        Assertions.assertEquals(732730L, bookService.edit(bookDTO.getId(),bookDTO).getQuantity());
     }
     @Test
     void sell(){
         BookDTO bookDTO = BookDTO.builder()
+                .id(randomLong())
                 .title(randomString())
                 .author(randomString())
                 .price(randomBoundedFloat(200))
@@ -97,6 +98,6 @@ public class BookServiceIntegrationTest {
                 .build();
         genreRepository.save(Genre.builder().genre(bookDTO.getGenre()).build());
         bookDTO = bookService.create(bookDTO);
-        Assertions.assertTrue(bookService.sell(bookDTO));
+        Assertions.assertTrue(bookService.sell(bookDTO.getId()));
     }
 }

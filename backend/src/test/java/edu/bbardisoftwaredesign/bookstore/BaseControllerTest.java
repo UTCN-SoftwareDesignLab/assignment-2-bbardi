@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+import javax.xml.transform.Result;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -39,6 +41,12 @@ public abstract class BaseControllerTest {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
+    protected ResultActions performPostWithPathVariable(String path, String variable) throws Exception{
+        return mockMvc.perform(post(path,variable)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
     protected ResultActions performDeleteWithRequestBody(String path, Object body) throws Exception {
         return mockMvc.perform(delete(path)
                 .content(asJsonString(body))
@@ -46,8 +54,14 @@ public abstract class BaseControllerTest {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
-    protected ResultActions performPatchWithRequestBody(String path, Object body) throws Exception {
-        return mockMvc.perform(patch(path)
+    protected ResultActions performDeleteWithPathVariable(String path, String variable) throws Exception {
+        return mockMvc.perform(delete(path,variable)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    protected ResultActions performPatchWithRequestBodyAndPathVariable(String path,String variable, Object body) throws Exception {
+        return mockMvc.perform(patch(path,variable)
                 .content(asJsonString(body))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));

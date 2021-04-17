@@ -40,7 +40,7 @@ public class GenreControllerTest extends BaseControllerTest {
     void findAllGenres() throws Exception{
         List<GenreDTO> genreDTOS = TestCreationFactory.listOf(GenreDTO.class);
         when(genreService.findAll()).thenReturn(genreDTOS);
-        ResultActions resultActions = mockMvc.perform(get(GENRES+FIND_ALL));
+        ResultActions resultActions = mockMvc.perform(get(GENRES));
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(genreDTOS));
     }
@@ -51,7 +51,7 @@ public class GenreControllerTest extends BaseControllerTest {
                 .genre(randomString())
                 .build();
         when(genreService.create(genreDTO)).thenReturn(genreDTO);
-        ResultActions result = performPostWithRequestBody(GENRES+CREATE,genreDTO);
+        ResultActions result = performPostWithRequestBody(GENRES,genreDTO);
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(genreDTO));
     }
@@ -59,19 +59,21 @@ public class GenreControllerTest extends BaseControllerTest {
     @Test
     void deleteGenre() throws Exception{
         GenreDTO genreDTO = GenreDTO.builder()
+                .id(randomLong())
                 .genre(randomString())
                 .build();
-        ResultActions result = performDeleteWithRequestBody(GENRES+DELETE,genreDTO);
+        ResultActions result = performDeleteWithPathVariable(GENRES+ENTITY,genreDTO.getId().toString());
         result.andExpect(status().isOk());
     }
 
     @Test
     void editGenre() throws Exception{
         GenreDTO genreDTO = GenreDTO.builder()
+                .id(randomLong())
                 .genre(randomString())
                 .build();
-        when(genreService.edit(genreDTO)).thenReturn(genreDTO);
-        ResultActions result = performPatchWithRequestBody(GENRES+EDIT,genreDTO);
+        when(genreService.edit(genreDTO.getId(),genreDTO)).thenReturn(genreDTO);
+        ResultActions result = performPatchWithRequestBodyAndPathVariable(GENRES+ENTITY,genreDTO.getId().toString(),genreDTO);
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(genreDTO));
     }

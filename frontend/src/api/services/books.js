@@ -2,14 +2,14 @@ import authHeader, { BASE_URL, HTTP } from "../http";
 
 export default {
   fetchAll() {
-    return HTTP.get(BASE_URL + "/bookstore/books/findall", { headers: authHeader() }).then(
+    return HTTP.get(BASE_URL + "/bookstore/books", { headers: authHeader() }).then(
       (response) => {
         return response.data;
       }
     );
   },
   deleteBook(book) {
-    return HTTP.delete(BASE_URL + "/bookstore/books/delete", { data: book, headers: authHeader() }).then(
+    return HTTP.delete(BASE_URL + `/bookstore/books/${book.id}`, { headers: authHeader() }).then(
       (response) => {
         return response.data;
       },
@@ -19,7 +19,7 @@ export default {
     );
   },
   sellBook(book) {
-    return HTTP.post(BASE_URL + "/bookstore/books/sell", book, { headers: authHeader() }).then(
+    return HTTP.post(BASE_URL + `/bookstore/books/${book.id}/sell`,null, { headers: authHeader() }).then(
       (response) => {
         return response.data;
       },
@@ -29,7 +29,7 @@ export default {
     );
   },
   createBook(book) {
-    return HTTP.post(BASE_URL + "/bookstore/books/create", book, { headers: authHeader() }).then(
+    return HTTP.post(BASE_URL + "/bookstore/books", book, { headers: authHeader() }).then(
       (response) => {
         return response.data;
       },
@@ -39,7 +39,7 @@ export default {
     );
   },
   editBook(book) {
-    return HTTP.patch(BASE_URL + "/bookstore/books/edit", book, { headers: authHeader() }).then(
+    return HTTP.patch(BASE_URL + `/bookstore/books/${book.id}`, book, { headers: authHeader() }).then(
       (response) => {
         return response.data;
       },

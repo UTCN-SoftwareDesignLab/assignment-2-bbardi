@@ -39,12 +39,12 @@ public class BookService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Genre not found: " + genre));
     }
 
-    public void remove(BookDTO book) {
-        bookRepository.delete(bookMapper.fromDto(book));
+    public void remove(Long Id) {
+        bookRepository.deleteById(Id);
     }
 
-    public boolean sell(BookDTO book) {
-        Book actBook = findById(book.getId());
+    public boolean sell(Long id) {
+        Book actBook = findById(id);
         if (actBook.getQuantity() <= 0)
             return false;
         else actBook.setQuantity(actBook.getQuantity() - 1);
@@ -59,9 +59,10 @@ public class BookService {
         return bookMapper.toDto(bookRepository.save(actBook));
     }
 
-    public BookDTO edit(BookDTO book) {
+    public BookDTO edit(Long id, BookDTO book) {
         Genre actGenre = findGenre(book.getGenre());
         Book actBook = bookMapper.fromDto(book);
+        actBook.setId(id);
         actBook.setGenre(actGenre);
         return bookMapper.toDto(bookRepository.save(actBook));
     }

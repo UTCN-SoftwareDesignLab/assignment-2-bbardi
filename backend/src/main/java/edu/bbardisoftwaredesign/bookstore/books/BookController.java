@@ -17,23 +17,28 @@ import static edu.bbardisoftwaredesign.bookstore.UrlMapping.*;
 @RestController
 @RequestMapping(BOOKS)
 @RequiredArgsConstructor
-public class BooksController {
+public class BookController {
     private final BookService bookService;
     private final ReportServiceFactory reportServiceFactory;
 
-    @GetMapping(FIND_ALL)
+    @GetMapping
     public List<BookDTO> findAllBooks() {
         return bookService.findAll();
     }
 
-    @DeleteMapping(DELETE)
-    public void deleteBook(@RequestBody BookDTO book) {
-        bookService.remove(book);
+    @PostMapping
+    public BookDTO createBook(@RequestBody BookDTO book) {
+        return bookService.create(book);
     }
 
-    @PostMapping(SELL_BOOK)
-    public ResponseEntity<?> sellBook(@RequestBody BookDTO book) {
-        if (bookService.sell(book)) {
+    @DeleteMapping(ENTITY)
+    public void deleteBook(@PathVariable Long id) {
+        bookService.remove(id);
+    }
+
+    @PostMapping(ENTITY + SELL_BOOK)
+    public ResponseEntity<?> sellBook(@PathVariable Long id) {
+        if (bookService.sell(id)) {
             return ResponseEntity.ok(new MessageResponse("Successfully sold book"));
         } else {
             return ResponseEntity
@@ -42,14 +47,9 @@ public class BooksController {
         }
     }
 
-    @PostMapping(CREATE)
-    public BookDTO createBook(@RequestBody BookDTO book) {
-        return bookService.create(book);
-    }
-
-    @PatchMapping(EDIT)
-    public BookDTO editBook(@RequestBody BookDTO book) {
-        return bookService.edit(book);
+    @PatchMapping(ENTITY)
+    public BookDTO editBook(@PathVariable Long id,@RequestBody BookDTO book) {
+        return bookService.edit(id, book);
     }
 
     @GetMapping(EXPORT_REPORT)

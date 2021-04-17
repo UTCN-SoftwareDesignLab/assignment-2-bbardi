@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static edu.bbardisoftwaredesign.bookstore.TestCreationFactory.randomLong;
 import static edu.bbardisoftwaredesign.bookstore.TestCreationFactory.randomString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -89,19 +90,13 @@ public class UserManagementServiceTest {
     void deleteUser() {
         String role = "ADMIN";
         UserDTO user = UserDTO.builder()
+                .id(randomLong())
                 .username(randomString())
                 .password(randomString())
                 .email(randomString())
                 .roles(Set.of(role))
                 .build();
-        User actUser = User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .roles(user.getRoles().stream().map(rol -> Role.builder().name(ERole.valueOf(rol)).build()).collect(Collectors.toSet()))
-                .build();
-        when(userMapper.fromDto(user)).thenReturn(actUser);
-        userManagementService.deleteUser(user);
+        userManagementService.deleteUser(user.getId());
     }
 
     @Test
@@ -127,6 +122,6 @@ public class UserManagementServiceTest {
         when(passwordEncoder.encode(any())).thenReturn(randomString());
         when(userRepository.save(any())).thenReturn(actUser);
         when(userRepository.findById(any())).thenReturn(Optional.of(actUser));
-        Assertions.assertEquals(userManagementService.editUser(user), user);
+        Assertions.assertEquals(userManagementService.editUser(user.getId(),user), user);
     }
 }

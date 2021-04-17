@@ -1,6 +1,7 @@
 package edu.bbardisoftwaredesign.bookstore.user.service;
 
 import edu.bbardisoftwaredesign.bookstore.user.mapper.UserMapper;
+import edu.bbardisoftwaredesign.bookstore.user.model.ERole;
 import edu.bbardisoftwaredesign.bookstore.user.model.Role;
 import edu.bbardisoftwaredesign.bookstore.user.model.User;
 import edu.bbardisoftwaredesign.bookstore.user.model.dto.UserDTO;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,23 +28,20 @@ public class UserManagementService {
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
 
-    private User setRoleIDs(User user) {
-        Set<Role> roleSet = new HashSet<>();
-        user.getRoles()
-                .forEach(role -> {
-                    Role newRole = roleRepository.findByName(role.getName()).orElseThrow(() -> new RuntimeException("Unable to find role"));
-                    roleSet.add(newRole);
-                });
-        user.setRoles(roleSet);
-        return user;
+    private Set<Role> mapRoles(Set<String> roles){
+        return roles.stream()
+                .map(role ->
+                        roleRepository.findByName(ERole.valueOf(role))
+                            .orElseThrow(()-> new EntityNotFoundException("Unable to find role"))
+                )
+                .collect(Collectors.toSet());
     }
 
-    private void verifyDataUnique(User user) {
-        User DBUser = userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("Unable to find user"));
-        if (!DBUser.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
+    private void verifyDataUnique(User actUser,UserDTO user) {
+        if (!actUser.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
-        if (!DBUser.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(user.getEmail())) {
+        if (!actUser.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(user.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
     }
@@ -59,7 +59,8 @@ public class UserManagementService {
 
 
     public UserDTO createUser(UserDTO user) {
-        User actUser = setRoleIDs(userMapper.fromDto(user));
+        User actUser = userMapper.fromDto(user);
+        actUser.setRoles(mapRoles(user.getRoles()));
         if (userRepository.existsByUsername(actUser.getUsername()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
         if (userRepository.existsByEmail(actUser.getEmail()))
@@ -68,17 +69,18 @@ public class UserManagementService {
         return userMapper.toDto(userRepository.save(actUser));
     }
 
-    public void deleteUser(UserDTO user) {
-        userRepository.delete(userMapper.fromDto(user));
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 
-    public UserDTO editUser(UserDTO user) {
-        User actUser = setRoleIDs(userMapper.fromDto(user));
-        verifyDataUnique(actUser);
-        if (user.getPassword().equals("")) {
-            getPasswordFromDB(actUser);
-        } else {
-            actUser.setPassword(encoder.encode(actUser.getPassword()));
+    public UserDTO editUser(Long id, UserDTO user) {
+        User actUser = userRepository.findById(id).orElseThrow(()->new EntityExistsException("User not found"));
+        actUser.setRoles(mapRoles(user.getRoles()));
+        verifyDataUnique(actUser,user);
+        actUser.setEmail(user.getEmail());
+        actUser.setUsername(user.getUsername());
+        if (!user.getPassword().equals("")) {
+            actUser.setPassword(encoder.encode(user.getPassword()));
         }
         return userMapper.toDto(userRepository.save(actUser));
     }

@@ -16,22 +16,22 @@ import static edu.bbardisoftwaredesign.bookstore.UrlMapping.*;
 public class GenreController {
     private final GenreService genreService;
 
-    @PostMapping(CREATE)
+    @PostMapping
     public GenreDTO createGenre(@RequestBody GenreDTO genre) {
         return genreService.create(genre);
     }
 
-    @DeleteMapping(DELETE)
-    public void deleteGenre(@RequestBody GenreDTO genre) {
-        genreService.delete(genre);
+    @DeleteMapping(ENTITY)
+    public void deleteGenre(@PathVariable Long id) {
+        genreService.delete(id);
     }
 
-    @PatchMapping(EDIT)
-    public GenreDTO editGenre(@RequestBody GenreDTO genre) {
-        return genreService.edit(genre);
+    @PatchMapping(ENTITY)
+    public GenreDTO editGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
+        return genreService.edit(id, genre);
     }
 
-    @GetMapping(FIND_ALL)
+    @GetMapping
     public List<GenreDTO> findAllGenres() {
         return genreService.findAll();
     }

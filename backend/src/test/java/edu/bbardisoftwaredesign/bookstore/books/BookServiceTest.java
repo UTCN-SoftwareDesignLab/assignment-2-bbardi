@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static edu.bbardisoftwaredesign.bookstore.TestCreationFactory.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class BookServiceTest {
@@ -107,7 +108,7 @@ public class BookServiceTest {
         when(bookMapper.toDto(book)).thenReturn(bookDTO);
         when(bookRepository.save(book)).thenReturn(book);
         when(genreRepository.findByGenre(any())).thenReturn(Optional.of(Genre.builder().genre(randomString()).build()));
-        Assertions.assertEquals(bookDTO.getId(), bookService.edit(bookDTO).getId());
+        Assertions.assertEquals(bookDTO.getId(), bookService.edit(bookDTO.getId(),bookDTO).getId());
     }
 
     @Test
@@ -119,20 +120,12 @@ public class BookServiceTest {
                 .price(randomBoundedFloat(200))
                 .id(randomLong())
                 .build();
-        BookDTO bookDTO = BookDTO.builder()
-                .title(book.getTitle())
-                .quantity(book.getQuantity())
-                .author(book.getAuthor())
-                .price(book.getPrice())
-                .id(book.getId())
-                .build();
-        when(bookMapper.toDto(book)).thenReturn(bookDTO);
-        when(bookMapper.fromDto(bookDTO)).thenReturn(book);
-        bookService.remove(bookDTO);
+        bookService.remove(book.getId());
     }
     @Test
     void sell(){
         Book book = Book.builder()
+                .id(randomLong())
                 .title(randomString())
                 .quantity(randomLong())
                 .author(randomString())
@@ -140,6 +133,7 @@ public class BookServiceTest {
                 .id(randomLong())
                 .build();
         BookDTO bookDTO = BookDTO.builder()
+                .id(book.getId())
                 .title(book.getTitle())
                 .quantity(book.getQuantity())
                 .author(book.getAuthor())
@@ -151,6 +145,6 @@ public class BookServiceTest {
         when(bookRepository.save(book)).thenReturn(book);
         when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
         when(genreRepository.findByGenre(any())).thenReturn(Optional.of(Genre.builder().genre(randomString()).build()));
-        Assertions.assertEquals(bookDTO.getQuantity()>0 ,bookService.sell(bookDTO));
+        Assertions.assertEquals(bookDTO.getQuantity()>0 ,bookService.sell(bookDTO.getId()));
     }
 }

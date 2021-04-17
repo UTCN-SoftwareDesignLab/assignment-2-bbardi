@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
 public class PDFReportService implements ReportService {
 
     private final BookRepository bookRepository;
-    public static final String header = "ID;Title;Author;Price";
+    private static final String header = "ID;Title;Author;Price";
+    private static final Integer ENTRIES_PER_PAGE = 22;
 
     private String parseBook(Book book) {
         return String.format("%d;%s;%s;%.2f", book.getId(), book.getTitle(), book.getAuthor(), book.getPrice());
@@ -57,10 +58,9 @@ public class PDFReportService implements ReportService {
             contentStream.newLine();
             contentStream.newLine();
             count++;
-            if (count == 22) {//reinitialize the stream to go to the next page
+            if (count % ENTRIES_PER_PAGE == 0) {//reinitialize the stream to go to the next page
                 contentStream.endText();
                 contentStream.close();
-                count = 0;
                 document.addPage(page);
                 page = new PDPage();
                 contentStream = initializeStream(document, page);

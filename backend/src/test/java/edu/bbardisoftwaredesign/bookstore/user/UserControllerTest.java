@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserControllerTest extends BaseControllerTest {
     @InjectMocks
-    private UsersController usersController;
+    private UserController usersController;
 
     @Mock
     private UserManagementService userManagementService;
@@ -31,7 +31,7 @@ public class UserControllerTest extends BaseControllerTest {
     protected void setUp(){
         super.setUp();
         MockitoAnnotations.openMocks(this);
-        usersController = new UsersController(userManagementService);
+        usersController = new UserController(userManagementService);
         mockMvc = MockMvcBuilders.standaloneSetup(usersController).build();
     }
 
@@ -39,7 +39,7 @@ public class UserControllerTest extends BaseControllerTest {
     void findAllUsers() throws Exception{
         List<UserDTO> userDTOList = TestCreationFactory.listOf(UserDTO.class);
         when(userManagementService.findAll()).thenReturn(userDTOList);
-        ResultActions result = mockMvc.perform(get(USERS+FIND_ALL));
+        ResultActions result = mockMvc.perform(get(USERS));
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(userDTOList));
 
@@ -54,7 +54,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .password(randomString())
                 .build();
         when(userManagementService.createUser(user)).thenReturn(user);
-        ResultActions result = performPostWithRequestBody(USERS+CREATE,user);
+        ResultActions result = performPostWithRequestBody(USERS,user);
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(user));
     }
@@ -67,7 +67,7 @@ public class UserControllerTest extends BaseControllerTest {
                 .username(randomString())
                 .password(randomString())
                 .build();
-        ResultActions result = performDeleteWithRequestBody(USERS+DELETE,user);
+        ResultActions result = performDeleteWithPathVariable(USERS+ENTITY,user.getId().toString());
         result.andExpect(status().isOk());
     }
 
@@ -79,8 +79,8 @@ public class UserControllerTest extends BaseControllerTest {
                 .username(randomString())
                 .password(randomString())
                 .build();
-        when(userManagementService.editUser(user)).thenReturn(user);
-        ResultActions result = performPatchWithRequestBody(USERS+EDIT,user);
+        when(userManagementService.editUser(user.getId(),user)).thenReturn(user);
+        ResultActions result = performPatchWithRequestBodyAndPathVariable(USERS+ENTITY,user.getId().toString(),user);
         result.andExpect(status().isOk())
                 .andExpect(jsonContentToBe(user));
     }

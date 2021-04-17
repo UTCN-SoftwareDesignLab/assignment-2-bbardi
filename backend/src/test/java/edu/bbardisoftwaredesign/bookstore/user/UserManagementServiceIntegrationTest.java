@@ -67,7 +67,7 @@ public class UserManagementServiceIntegrationTest {
                 .roles(Set.of(role))
                 .build();
         user = userManagementService.createUser(user);
-        userManagementService.deleteUser(user);
+        userManagementService.deleteUser(user.getId());
     }
     @Test
     void editUser(){
@@ -81,6 +81,6 @@ public class UserManagementServiceIntegrationTest {
                 .build();
         user = userManagementService.createUser(user);
         user.setUsername("AM_I_EDITED");
-        Assertions.assertEquals(userManagementService.editUser(user).getUsername(),"AM_I_EDITED");
+        Assertions.assertEquals(userManagementService.editUser(user.getId(),user).getUsername(),"AM_I_EDITED");
     }
 }

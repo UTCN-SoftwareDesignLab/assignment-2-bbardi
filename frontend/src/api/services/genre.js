@@ -2,14 +2,14 @@ import authHeader, { BASE_URL, HTTP } from "../http";
 
 export default {
     fetchAll() {
-        return HTTP.get(BASE_URL + "/bookstore/genres/findall", { headers: authHeader() }).then(
+        return HTTP.get(BASE_URL + "/bookstore/genres", { headers: authHeader() }).then(
             (response) => {
                 return response.data
             }
         )
     },
     createGenre(genre) {
-        return HTTP.post(BASE_URL + "/bookstore/genres/create", genre, { headers: authHeader() }).then(
+        return HTTP.post(BASE_URL + "/bookstore/genres", genre, { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },
@@ -19,7 +19,7 @@ export default {
         );
     },
     editGenre(genre) {
-        return HTTP.patch(BASE_URL + "/bookstore/genres/edit", genre, { headers: authHeader() }).then(
+        return HTTP.patch(BASE_URL + `/bookstore/genres/${genre.id}`, genre, { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },
@@ -29,7 +29,7 @@ export default {
         );
     },
     deleteGenre(genre) {
-        return HTTP.delete(BASE_URL + "/bookstore/genres/delete", { data: genre, headers: authHeader() }).then(
+        return HTTP.delete(BASE_URL + `/bookstore/genres/${genre.id}`, { headers: authHeader() }).then(
             (response) => {
                 return response.data;
             },

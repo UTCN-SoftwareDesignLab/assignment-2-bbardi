@@ -95,7 +95,7 @@ export default {
   },
   methods: {
     getGenre(genre) {
-      return api.genre.getGenre(genre);
+      return genre.genre;
     },
     close() {
       this.$emit("refresh");

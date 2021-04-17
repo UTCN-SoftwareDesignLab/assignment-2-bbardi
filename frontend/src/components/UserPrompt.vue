@@ -69,7 +69,6 @@ export default {
   props: {
     openDialog: Boolean,
     editedUser: Object,
-    genres: Array,
   },
   data: () => ({
     rules: {
@@ -91,7 +90,6 @@ export default {
     close() {
       this.$emit("refresh");
     },
-
     save() {
       if (!this.editedUser.id) {
         api.users.createUser(this.editedUser).then(() => this.$emit("refresh"));

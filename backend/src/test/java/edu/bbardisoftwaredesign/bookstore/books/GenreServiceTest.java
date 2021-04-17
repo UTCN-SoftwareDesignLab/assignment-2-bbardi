@@ -66,20 +66,30 @@ public class GenreServiceTest {
 
     @Test
     void edit(){
-        Genre genre = Genre.builder().genre(randomString()).build();
-        GenreDTO genreDTO = GenreDTO.builder().genre(genre.getGenre()).build();
-        when(genreMapper.toDto(genre)).thenReturn(genreDTO);
-        when(genreMapper.fromDto(genreDTO)).thenReturn(genre);
+        Genre genre = Genre.builder()
+                .id(randomLong())
+                .genre(randomString())
+                .build();
+        GenreDTO genreDTO = GenreDTO.builder()
+                .id(genre.getId())
+                .genre(genre.getGenre())
+                .build();
+        when(genreRepository.findById(genre.getId())).thenReturn(java.util.Optional.of(genre));
         when(genreRepository.save(genre)).thenReturn(genre);
-        Assertions.assertEquals(genreDTO.getGenre(),genreService.edit(genreDTO).getGenre());
+        when(genreMapper.toDto(genre)).thenReturn(genreDTO);
+        Assertions.assertEquals(genreDTO.getGenre(),genreService.edit(genreDTO.getId(),genreDTO).getGenre());
     }
 
     @Test
     void delete(){
-        Genre genre = Genre.builder().genre(randomString()).build();
-        GenreDTO genreDTO = GenreDTO.builder().genre(genre.getGenre()).build();
-        when(genreMapper.toDto(genre)).thenReturn(genreDTO);
-        when(genreMapper.fromDto(genreDTO)).thenReturn(genre);
-        genreService.delete(genreDTO);
+        Genre genre = Genre.builder()
+                .id(randomLong())
+                .genre(randomString())
+                .build();
+        GenreDTO genreDTO = GenreDTO.builder()
+                .id(genre.getId())
+                .genre(genre.getGenre())
+                .build();
+        genreService.delete(genreDTO.getId());
     }
 }
